@@ -1,0 +1,28 @@
+type Fund @entity {
+    id: ID!
+}
+
+type Deposit @entity {
+    id: ID!
+    fund: Fund!
+    account: Bytes!
+    amount: BigInt!
+    timestamp: BigInt!
+}
+
+type Withdrawal @entity {
+    id: ID!
+    fund: Fund!
+    account: Bytes!
+    amount: BigInt!
+    withdrawalFee: BigInt!
+    timestamp: BigInt!
+}
+
+type HardWork @entity {
+    id: ID!
+    fund: Fund!
+    totalValueLocked: BigInt!
+    pricePerShare: BigInt!
+    timestamp: BigInt!
+}
