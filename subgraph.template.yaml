@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "{{fund_factory_address}}"
       abi: FundFactory
-      startBlock: 9727113
+      startBlock: {{start_block}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

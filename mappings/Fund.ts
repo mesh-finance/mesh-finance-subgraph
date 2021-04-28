@@ -4,7 +4,7 @@ import { getOrCreateFund } from './FundFactory'
 import { log } from '@graphprotocol/graph-ts'
 
 export function handleDeposit(event: DepositEvent): void {
-    let fund = getOrCreateFund(event.address);
+    let fund = getOrCreateFund(event.address, false);
     log.info('handleDeposit: Fund is {}', [fund.id]);
     let requiredId = event.address.toHexString()
     .concat('_')
@@ -19,7 +19,7 @@ export function handleDeposit(event: DepositEvent): void {
 }
 
 export function handleWithdrawal(event: WithdrawEvent): void {
-    let fund = getOrCreateFund(event.address);
+    let fund = getOrCreateFund(event.address, false);
     let requiredId = event.address.toHexString()
     .concat('_')
     .concat(event.transaction.hash.toHexString());
@@ -33,7 +33,7 @@ export function handleWithdrawal(event: WithdrawEvent): void {
 }
 
 export function handleHardWork(event: HardWorkDone): void {
-    let fund = getOrCreateFund(event.address);
+    let fund = getOrCreateFund(event.address, false);
     let requiredId = event.address.toHexString()
     .concat('_')
     .concat(event.transaction.hash.toHexString())

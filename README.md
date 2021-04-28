@@ -29,12 +29,12 @@ For ropsten:
 
 ```bash
 yarn prepare:ropsten && yarn codegen
-yarn prepare:ropsten && yarn deploy
+yarn prepare:ropsten && yarn deploy:ropsten
 ```
 
 For mainnet:
 
 ```bash
 yarn prepare:mainnet && yarn codegen
-yarn prepare:mainnet && yarn deploy
+yarn prepare:mainnet && yarn deploy:mainnet
 ```
