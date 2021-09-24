@@ -1,5 +1,7 @@
 {
     "network": "mainnet",
-    "fund_factory_address": "0x3Cf49c31A0C13E89700a13813B8ac1170B402B80",
-    "start_block": 12238170
+    "fund_factory_address_1": "0x3Cf49c31A0C13E89700a13813B8ac1170B402B80",
+    "start_block_1": 12238170,
+    "fund_factory_address_2": "0xd3d5A88461bD20494ECdF6b57d0FD4b20DA6b3bb",
+    "start_block_2": 13249000
 }

@@ -1,5 +1,7 @@
 {
     "network": "ropsten",
-    "fund_factory_address": "0x858d7E247A2f02f518eDB9e4A351e50d1D0e69bB",
-    "start_block": 9727112
+    "fund_factory_address_1": "0x858d7E247A2f02f518eDB9e4A351e50d1D0e69bB",
+    "start_block_1": 9727112,
+    "fund_factory_address_2": "0xB046f4081cF24bF8Ba61679f7a567F6889d0c561",
+    "start_block_2": 11070200
 }

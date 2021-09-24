@@ -27,7 +27,8 @@ export function getOrCreateFund(address: Address, event: NewFund, createTemplate
         fund.balanceTokensInvested = BIGINT_ZERO;
         fund.tokensDepositLimit = BIGINT_ZERO;
         fund.sharesSupply = BIGINT_ZERO;
-        fund.withdrawalFeeBps = fundContract.withdrawalFee().toI32();
+        let withdrawalFee = fundContract.try_withdrawalFee();
+        fund.withdrawalFeeBps = withdrawalFee.reverted ? 0 : withdrawalFee.value.toI32();
 
       }
       log.info('getOrCreateFund: Final Fund is {}', [fund.id]);

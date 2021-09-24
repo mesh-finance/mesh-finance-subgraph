@@ -5,12 +5,36 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
+    name: FundFactory_1
+    network: {{network}}
+    source:
+      address: "{{fund_factory_address_1}}"
+      abi: FundFactory_1
+      startBlock: {{start_block_1}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Fund
+      abis:
+        - name: FundFactory_1
+          file: ./abis/FundFactory_1.json
+        - name: Fund
+          file: ./abis/Fund.json
+        - name: ERC20
+          file: ./abis/ERC20Detailed.json
+      eventHandlers:
+        - event: NewFund(address)
+          handler: handleNewFund
+      file: ./mappings/FundFactory.ts
+  - kind: ethereum/contract
     name: FundFactory
     network: {{network}}
     source:
-      address: "{{fund_factory_address}}"
+      address: "{{fund_factory_address_2}}"
       abi: FundFactory
-      startBlock: {{start_block}}
+      startBlock: {{start_block_2}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -24,9 +48,8 @@ dataSources:
           file: ./abis/Fund.json
         - name: ERC20
           file: ./abis/ERC20Detailed.json
-
       eventHandlers:
-        - event: NewFund(address)
+        - event: NewFund(indexed address)
           handler: handleNewFund
       file: ./mappings/FundFactory.ts
 templates:
