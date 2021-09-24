@@ -20,6 +20,11 @@ dataSources:
       abis:
         - name: FundFactory
           file: ./abis/FundFactory.json
+        - name: Fund
+          file: ./abis/Fund.json
+        - name: ERC20
+          file: ./abis/ERC20Detailed.json
+
       eventHandlers:
         - event: NewFund(address)
           handler: handleNewFund
@@ -36,12 +41,20 @@ templates:
       language: wasm/assemblyscript
       entities:
         - Fund
+        - FundUpdate
         - Deposit
         - Withdraw
         - HardWork
+        - Transaction
+        - Transfer
+        - AccountFundPosition
+        - AccountFundPositionUpdate
       abis:
         - name: Fund
           file: ./abis/Fund.json
+        - name: ERC20
+          file: ./abis/ERC20Detailed.json
+
       eventHandlers:
         - event: Deposit(indexed address,uint256)
           handler: handleDeposit
@@ -49,4 +62,7 @@ templates:
           handler: handleWithdrawal
         - event: HardWorkDone(uint256,uint256)
           handler: handleHardWork
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+
       file: ./mappings/Fund.ts

@@ -1,22 +1,140 @@
+type Transaction @entity {
+    "Transaction hash + Log Index"
+    id: ID!
+    "Log index related to the event. A Transaction might contain multiple events."
+    logIndex: BigInt!
+    "The event name / call stacktrace"
+    event: String!
+    "The transaction sender"
+    from: Bytes!
+    "Gas price used in the transaction"
+    gasPrice: BigInt!
+    "Gas sent used in the transaction"
+    gasSent: BigInt!
+    "Transaction hash"
+    hash: Bytes!
+    "The transaction index"
+    index: BigInt!
+    "Address that received the transaction"
+    to: Bytes!
+    "Ether value sent in the transaction"
+    value: BigInt!
+    "Timestamp when the transaction was executed"
+    timestamp: BigInt!
+    "Gas limit used in the transaction"
+    gasLimit: BigInt!
+    "Block number"
+    blockNumber: BigInt!
+}
+
+type Token @entity {
+    "Token address"
+    id: ID!
+    "Number of decimals for this Token"
+    decimals: Int!
+    "Name of the Token"
+    name: String!
+    "Symbol of the Token"
+    symbol: String!
+}
+
+type Account @entity {
+    "Account address"
+    id: ID!
+
+    "Fund deposits"
+    deposits: [Deposit!]! @derivedFrom(field: "account")
+
+    "Fund withdrawals"
+    withdrawals: [Withdrawal!]! @derivedFrom(field: "account")
+
+    #    "Fund positions"
+    #    fundPositions: [AccountFundPosition!]! @derivedFrom(field: "account")
+
+    "Incoming share transfers"
+    sharesReceived: [Transfer!]! @derivedFrom(field: "to")
+
+    "Outgoing share transfers"
+    sharesSent: [Transfer!]! @derivedFrom(field: "from")
+}
+
 type Fund @entity {
     id: ID!
+    underlyingToken: Token!
+    shareToken: Token!
+    name: String!
+    symbol: String!
+
+    transaction: Transaction!
+
+    "Latest Fund Update"
+    latestUpdate: FundUpdate
+
+    "All Fund Updates"
+    historicalUpdates: [FundUpdate!]! @derivedFrom(field: "fund")
+
+    "Token deposits into the Fund"
+    deposits: [Deposit!]! @derivedFrom(field: "fund")
+
+    "Token withdrawals from the Fund"
+    withdrawals: [Withdrawal!]! @derivedFrom(field: "fund")
+
+    "Transfers of Fund Shares"
+    transfers: [Transfer!]! @derivedFrom(field: "fund")
+
+    "Balance of Tokens in the Fund and its Strategies"
+    balanceTokens: BigInt!
+
+    "Current idle Token balance"
+    balanceTokensIdle: BigInt! # Tokens in the Fund contract
+
+    "Balance of Tokens invested into Strategies"
+    balanceTokensInvested: BigInt!
+
+    "Deposit limit for Tokens in the Fund"
+    tokensDepositLimit: BigInt!
+
+    "Current supply of Shares"
+    sharesSupply: BigInt!
+
+    "withdrawal fee in basis points"
+    withdrawalFeeBps: Int!
+
 }
 
 type Deposit @entity {
     id: ID!
     fund: Fund!
-    account: Bytes!
+    account: Account!
     amount: BigInt!
     timestamp: BigInt!
+
+    "Number of new Fund Shares minted"
+    sharesMinted: BigInt!
+
+    "Ethereum Transaction"
+    transaction: Transaction!
+
+    "Fund Update"
+    fundUpdate: FundUpdate!
+
 }
 
 type Withdrawal @entity {
     id: ID!
     fund: Fund!
-    account: Bytes!
+    account: Account!
     amount: BigInt!
     withdrawalFee: BigInt!
     timestamp: BigInt!
+
+    "Number of Fund Shares burnt"
+    sharesBurnt: BigInt!
+    "Ethereum Transaction"
+    transaction: Transaction!
+
+    "Fund Update"
+    fundUpdate: FundUpdate!
 }
 
 type HardWork @entity {
@@ -25,4 +143,156 @@ type HardWork @entity {
     totalValueLocked: BigInt!
     pricePerShare: BigInt!
     timestamp: BigInt!
+    transaction: Transaction!
+
+    "Fund Update"
+    fundUpdate: FundUpdate!
 }
+
+type Transfer @entity {
+    "Transaction-Log"
+    id: ID!
+    "Fund"
+    fund: Fund!
+    "Sender"
+    from: Account!
+    "Receiver"
+    to: Account!
+    "Fund Share Token"
+    shareToken: Token!
+    "Number of Fund Shares transferred"
+    shareAmount: BigInt!
+    "Fund Token"
+    underlyingToken: Token!
+    "Number of Tokens redeemable for shares transferred"
+    underlyingAmount: BigInt!
+    "Timestamp of Transfer"
+    timestamp: BigInt!
+    "Block number of Transfer"
+    blockNumber: BigInt!
+    "Ethereum Transaction"
+    transaction: Transaction!
+    #    "Whether the transfer was used to pay a performance or management fee"
+    #    isProtocolFee: Boolean!
+}
+
+type FundUpdate @entity {
+
+    "Fund-Transaction-Log"
+    id: ID!
+
+    "Timestamp of update"
+    timestamp: BigInt!
+
+    "Block number of update"
+    blockNumber: BigInt!
+
+    "Ethereum Transaction"
+    transaction: Transaction!
+
+    "Fund this update is for"
+    fund: Fund!
+
+    ### BALANCES AND SHARES
+
+    "Sum of tokens deposited"
+    tokensDeposited: BigInt!
+
+    "Sum of tokens withdrawn"
+    tokensWithdrawn: BigInt!
+
+    "Sum of Shares minted over all time"
+    sharesMinted: BigInt!
+
+    "Sum of Shares burnt over all time"
+    sharesBurnt: BigInt!
+
+    "Total Value Locked"
+    totalValueLocked: BigInt!
+
+    ### PERFORMANCE
+
+    "Current price per full share"
+    pricePerShare: BigInt!
+
+    "Returns generated in Tokens"
+    returnsGenerated: BigInt!
+
+    "Total fees in Shares" # in this FundUpdate
+    totalFees: BigInt!
+
+    "Withdraw fees fees in Shares"
+    withdrawalFees: BigInt!
+
+}
+
+type AccountFundPosition @entity {
+  "Account-Fund"
+  id: ID!
+  "Fund"
+  fund: Fund!
+  "Account"
+  account: Account!
+  "Fund token"
+  underlyingToken: Token!
+  "Fund share token"
+  shareToken: Token!
+  "Created in transaction"
+  transaction: Transaction!
+  "Latest account update for this Fund"
+  latestUpdate: AccountFundPositionUpdate!
+  "Account updates over time"
+  updates: [AccountFundPositionUpdate!]! @derivedFrom(field: "accountFundPosition")
+
+  "Share balance"
+  balanceShares: BigInt!
+  "The current balance of tokens defined as: sum(deposits) - sum(withdrawals) + sum(received transfers) - sum(sent transfers)."
+  balanceTokens: BigInt!
+  "The current balance position defined as: (fund.balanceOf(account) * (fund.pricePerShare() / 10**fund.decimals()))."
+  balancePosition: BigInt!
+  "The accumulated profit balance for the account/fund. It is only calculated when the user withdraws all the shares."
+  balanceProfit: BigInt!
+}
+
+type AccountFundPositionUpdate @entity {
+  "Account-Fund-Order"
+  id: ID!
+  "Incremental value for the same account/fund."
+  order: BigInt!
+  "Timestamp"
+  timestamp: BigInt!
+  "Block number"
+  blockNumber: BigInt!
+  "Account that owns position update"
+  account: Account!
+  "The account fund position that this update applies to"
+  accountFundPosition: AccountFundPosition!
+  "Ethereum Transaction"
+  transaction: Transaction!
+
+  "Sum of token deposits"
+  deposits: BigInt!
+  "Sum of token withdrawals"
+  withdrawals: BigInt!
+
+  "Sum of share tokens minted"
+  sharesMinted: BigInt!
+  "Sum of share tokens burnt"
+  sharesBurnt: BigInt!
+
+  # "Tokens sent"
+  tokensSent: BigInt!
+  # "Tokens received"
+  tokensReceived: BigInt!
+  # "Share tokens sent"
+  sharesSent: BigInt!
+  # "Share tokens received"
+  sharesReceived: BigInt!
+  # "The balance of shares"
+  balanceShares: BigInt!
+  "The balance position."
+  balancePosition: BigInt!
+  "Fund Update"
+  fundUpdate: FundUpdate!
+}
+

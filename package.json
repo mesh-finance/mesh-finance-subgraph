@@ -6,8 +6,10 @@
         "build": "graph build",
         "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
         "prepare:ropsten": "mustache config/ropsten.json subgraph.template.yaml > subgraph.yaml",
+        "prepare:polygon": "mustache config/polygon.json subgraph.template.yaml > subgraph.yaml",
         "deploy:mainnet": "graph deploy mesh-finance/mesh-finance-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-        "deploy:ropsten": "graph deploy mesh-finance/ropsten20210320 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
+        "deploy:ropsten": "graph deploy mesh-finance/ropsten20210320 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+        "deploy:polygon": "graph deploy mesh-finance/mesh-finance-subgraph-polygon --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
     },
     "devDependencies": {
       "@graphprotocol/graph-cli": "^0.20.0",

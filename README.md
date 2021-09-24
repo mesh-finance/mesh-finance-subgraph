@@ -38,3 +38,10 @@ For mainnet:
 yarn prepare:mainnet && yarn codegen
 yarn prepare:mainnet && yarn deploy:mainnet
 ```
+
+For polygon mainnet:
+
+```bash
+yarn prepare:polygon && yarn codegen
+yarn prepare:polygon && yarn deploy:polygon
+```
