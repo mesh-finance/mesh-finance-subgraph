@@ -1,8 +1,8 @@
 import { log, Address, BigInt } from '@graphprotocol/graph-ts'
 import { Fund as FundContract } from '../../../generated/templates/Fund/Fund'
 import { Deposit, Withdrawal, HardWork, Transaction, FundUpdate } from '../../../generated/schema'
-import { ZERO_ADDRESS, BIGINT_ZERO, DEFAULT_DECIMALS } from '../constants';
-import { getOrCreateFund } from '../../FundFactory'
+import { ZERO_ADDRESS, BIGINT_ZERO, DEFAULT_DECIMALS, ROPSTEN_CHAIN_ID } from '../constants';
+import { getOrCreateFund, getOrCreateChain} from '../../FundFactory'
 import * as fundUpdateLibrary from '../fund-update'
 import * as accountLibrary from '../accounts'
 import * as utilLibrary from '../util'
@@ -24,6 +24,7 @@ export function deposit(
   let pricePerShare = utilLibrary.getPricePerShare(fundContract);
 
   let fund = getOrCreateFund(eventAddress, null, false);
+  let chain = getOrCreateChain(ROPSTEN_CHAIN_ID);
 
 
   accountFundPositionLibrary.deposit(
@@ -34,6 +35,9 @@ export function deposit(
     depositedAmount,
     sharesMinted
   );
+
+  chain.TVL = chain.TVL.plus(depositedAmount);
+  chain.save();
 
 
     let requiredId = eventAddress.toHexString()

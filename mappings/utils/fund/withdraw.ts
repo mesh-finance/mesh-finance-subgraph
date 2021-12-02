@@ -5,7 +5,7 @@ import { log, Address, BigInt } from '@graphprotocol/graph-ts'
 import { Fund as FundContract } from '../../../generated/templates/Fund/Fund'
 import * as accountLibrary from '../accounts'
 import * as fundUpdateLibrary from '../fund-update'
-import { ZERO_ADDRESS, BIGINT_ZERO, DEFAULT_DECIMALS } from '../constants';
+import { ZERO_ADDRESS, BIGINT_ZERO, DEFAULT_DECIMALS, ROPSTEN_CHAIN_ID } from '../constants';
 import * as utilLibrary from '../util'
 import * as accountFundPositionLibrary from '../account-fund-position'
 
@@ -24,7 +24,9 @@ export function withdraw(
   let pricePerShare = utilLibrary.getPricePerShare(fundContract);
   let account = accountLibrary.getOrCreate(to);
   let totalValueLocked = utilLibrary.getTotalAssets(fundContract);
+
   let fund = fundFactoryLibrary.getOrCreateFund(eventAddress, null, false);
+  let chain = fundFactoryLibrary.getOrCreateChain(ROPSTEN_CHAIN_ID);
 
   let requiredId = eventAddress.toHexString()
     .concat('_')
@@ -129,6 +131,8 @@ export function withdraw(
       transaction,
       totalValueLocked
     );
+
+    chain.TVL = chain.TVL.minus(withdrawnAmount);
 
 // //     updateFundDayData(
 // //       fund,

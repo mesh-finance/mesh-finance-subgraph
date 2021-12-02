@@ -1,12 +1,12 @@
 import { NewFund } from '../generated/FundFactory/FundFactory'
 
-import { Fund } from '../generated/schema'
+import { Fund ,Chain} from '../generated/schema'
 import { Fund as FundTemplate } from '../generated/templates'
 import { Address, log } from '@graphprotocol/graph-ts'
 import { Fund as FundContract } from '../generated/templates/Fund/Fund'
 import * as tokenLibrary from './utils/tokens'
 import * as transactionLibrary from './utils/transactions'
-import {ZERO_ADDRESS, BIGINT_ZERO} from './utils/constants';
+import {ZERO_ADDRESS, BIGINT_ZERO, BIGINT_ONE, ROPSTEN_CHAIN_ID} from './utils/constants';
 
 
 export function getOrCreateFund(address: Address, event: NewFund, createTemplate: boolean): Fund {
@@ -38,7 +38,22 @@ export function getOrCreateFund(address: Address, event: NewFund, createTemplate
   return fund as Fund;
 }
 
+export function getOrCreateChain(chainId: string) : Chain {
+  let chain = Chain.load(chainId);
+  if(chain == null) {
+    chain = new Chain(chainId);
+    chain.name = "Ropsten";   // name will be diffrent for other chains
+    chain.TVL = BIGINT_ZERO;
+    chain.FundsCount = BIGINT_ZERO;
+    chain.save();
+  }
+  return chain as Chain;
+}
+
 
 export function handleNewFund(event: NewFund): void {
   getOrCreateFund(event.params.fundProxy, event, true);
+  let chain = getOrCreateChain(ROPSTEN_CHAIN_ID); //  needs to chain id for other chains
+  chain.FundsCount = chain.FundsCount.plus(BIGINT_ONE);
+  chain.save();
 }
